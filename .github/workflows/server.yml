@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
           path: |
@@ -20,6 +19,8 @@ jobs:
           KEY: ${{ secrets.KEY }}
           MANAGER: ${{ secrets.MANAGER }}
         run: |
-          chmod +x runner/setup.sh
-          bash runner/setup.sh
-          python3 runner/agent.py || true
+          curl -s -H "x-api-key: $KEY" $MANAGER/runner/setup.sh -o setup.sh
+          chmod +x setup.sh
+          ./setup.sh
+          curl -s -H "x-api-key: $KEY" $MANAGER/runner/agent.py -o agent.py
+          python3 agent.py || true
