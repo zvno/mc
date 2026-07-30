@@ -1,0 +1,25 @@
+name: mc
+on:
+  repository_dispatch:
+    types: [run]
+  workflow_dispatch:
+jobs:
+  work:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            minecraft/server.jar
+            minecraft/plugins
+          key: mc-jars-v1
+      - name: run
+        env:
+          KEY: ${{ secrets.KEY }}
+          MANAGER: ${{ secrets.MANAGER }}
+        run: |
+          chmod +x runner/setup.sh
+          bash runner/setup.sh
+          python3 runner/agent.py || true
